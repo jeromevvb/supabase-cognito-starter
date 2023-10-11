@@ -38,14 +38,14 @@
 
    can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
 
-```
-NEXT_PUBLIC_COGNITO_CALLBACK_URL=
-COGNITO_CLIENT_ID=
-COGNITO_CLIENT_SECRET=
-COGNITO_ISSUER=https://cognito-idp.{region}.amazonaws.com/{poolID}
-```
+   ```
+    NEXT_PUBLIC_COGNITO_CALLBACK_URL=
+    COGNITO_CLIENT_ID=
+    COGNITO_CLIENT_SECRET=
+    COGNITO_ISSUER=https://cognito-idp.{region}.amazonaws.com/{poolID}
+   ```
 
-see point 3 for configuration.
+   see point 3 for configuration.
 
 3. Create NextAuth Schema
 
@@ -56,9 +56,9 @@ see point 3 for configuration.
    Create a user pool on AWS Cognito with the default settings.  
    Once its done, create go to App-in-Integration  
    Add a new App Client  
-   Create a Public client, with **generate a client secret** enabled, then add your callback url. (Make sure this callback url is exactly the same as variable NEXT_PUBLIC_COGNITO_CALLBACK_URL)
-   Once its done, Get the Client ID and client secret for the App Client Information.
-   Add this to your .env.local (COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET)
+   Create a Public client, with **generate a client secret** enabled, then add your callback url. (Make sure this callback url is exactly the same as variable NEXT_PUBLIC_COGNITO_CALLBACK_URL)  
+   Once its done, Get the Client ID and client secret for the App Client Information.  
+   Add this to your .env.local (COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET)  
    Make sure to replace {region} and {poolID} from COGNITO_ISSUER variable. User PoolID should be find under `User Pool Overview` and region under Cognito domain. (For ex: .ap-southeast-2)
 
 5. You can now run the Next.js local development server:
@@ -77,6 +77,8 @@ In order to benefit from the Row Level Security feature in Supabase, make sure t
 
 ```javascript
 import { authConfig } from '@/lib/auth'
+import { getServerSession } from 'next/auth'
+import { createClient } from '@supabase/supabase-js'
 
 async function getUser() {
   const session = await getServerSession(authConfig)
