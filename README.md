@@ -45,7 +45,7 @@ can be found in [your Supabase project's API settings](https://app.supabase.com/
  COGNITO_ISSUER=https://cognito-idp.{region}.amazonaws.com/{poolID}
 ```
 
-see point 3 for configuration.
+see [point 4](https://github.com/jeromevvb/supabase-cognito-starter#4-configure-aws-cognito) for configuration.
 
 ### 3. Create NextAuth Schema
 
