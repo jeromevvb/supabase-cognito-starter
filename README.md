@@ -111,3 +111,57 @@ async function getUser() {
   return data
 }
 ```
+
+## Using encryption feature.
+
+Note that column encryption should only be used in highly sensitive scenarios as it has a meaningful impact on statement performance and flexibility. Supabase projects are already encrypted at rest by default.
+
+Go to Supabase Dashboard -> Project Settings -> Vault -> Encryption key -> Add new key -> Copy your ID.
+
+Add a column with the data type 'text' where encryption is needed.  
+RUN SQL command to use encryption on this column using you encryption key id.
+
+```
+SECURITY LABEL FOR pgsodium	ON COLUMN public.todos.content
+  IS 'ENCRYPT WITH KEY ID c0b1ca7c-8023-4136-a13e-ea1aa7602178';
+```
+
+This will create a view decrypted_todos, so you can read decrypted data from it. You'll have to allow RLS to work, as views do not enforce RLS by default.
+You'll have to drop the table and add `WITH (security_invoker = true)` to the query.
+
+```
+DROP VIEW IF EXISTS public.decrypted_todos;
+
+create view
+  public.decrypted_todos as
+select
+  todos.id,
+  todos.created_at,
+  todos.content,
+  case
+    when todos.content is null then null::text
+    else case
+      when 'c0b1ca7c-8023-4136-a13e-ea1aa7602178' is null then null::text
+      else convert_from(
+        pgsodium.crypto_aead_det_decrypt (
+          decode(todos.content, 'base64'::text),
+          convert_to(''::text, 'utf8'::name),
+          'c0b1ca7c-8023-4136-a13e-ea1aa7602178'::uuid,
+          null::bytea
+        ),
+        'utf8'::name
+      )
+    end
+  end as decrypted_content,
+  todos.user_id
+from
+  todos;
+
+```
+
+Finally, Allow using pgsodium.crypto_aead_det_decrypt for authenticated roles
+
+```
+GRANT EXECUTE ON FUNCTION pgsodium.crypto_aead_det_decrypt (bytea, bytea, uuid, bytea) TO authenticated;
+GRANT EXECUTE ON FUNCTION pgsodium.crypto_aead_det_encrypt (bytea, bytea, uuid, bytea) TO authenticated;
+```

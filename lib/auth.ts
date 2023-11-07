@@ -36,6 +36,7 @@ const authConfig = {
         }
 
         session.supabaseAccessToken = jwt.sign(payload, signingSecret)
+        session.userId = user.id
       }
       return session
     },

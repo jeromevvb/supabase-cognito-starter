@@ -6,7 +6,7 @@ export default function SignInButton(props: { label?: string }) {
   const { label = 'Login' } = props
   return (
     <button
-      onClick={() => signIn()}
+      onClick={() => signIn('cognito')}
       className='py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover'
     >
       {label}
